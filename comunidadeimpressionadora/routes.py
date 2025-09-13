@@ -9,24 +9,20 @@ from PIL import Image
 
 lista_usuarios = ['Lira', 'João', 'Alon', 'Alessandra', 'Amanda']
 
-
 @app.route('/')
 def home():
     posts = Post.query.order_by(Post.id.desc())
     return render_template('home.html', posts=posts)
 
-
 @app.route('/contato')
 def contato():
     return render_template('contato.html')
-
 
 @app.route('/usuarios')
 @login_required
 def usuarios():
     lista_usuarios = Usuario.query.all()
     return render_template('usuarios.html', lista_usuarios=lista_usuarios)
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -53,7 +49,6 @@ def login():
         return redirect(url_for('home'))
     return render_template('login.html', form_login=form_login, form_criarconta=form_criarconta)
 
-
 @app.route('/sair')
 @login_required
 def sair():
@@ -61,13 +56,11 @@ def sair():
     flash(f'Logout Feito com Sucesso', 'alert-success')
     return redirect(url_for('home'))
 
-
 @app.route('/perfil')
 @login_required
 def perfil():
     foto_perfil = url_for('static', filename='fotos_perfil/{}'.format(current_user.foto_perfil))
     return render_template('perfil.html', foto_perfil=foto_perfil)
-
 
 @app.route('/post/criar', methods=['GET', 'POST'])
 @login_required
@@ -75,36 +68,36 @@ def criar_post():
     form = FormCriarPost()
     if form.validate_on_submit():
         post = Post(titulo=form.titulo.data, corpo=form.corpo.data, autor=current_user)
+        if form.foto_post.data:
+            nome_imagem = salvar_imagem(form.foto_post.data, pasta='fotos_posts')
+            post.foto_post = nome_imagem
         database.session.add(post)
         database.session.commit()
         flash('Post Criado com Sucesso', 'alert-success')
         return redirect(url_for('home'))
     return render_template('criarpost.html', form=form)
 
-
-def salvar_imagem(imagem):
+def salvar_imagem(imagem, pasta='fotos_perfil'):
     codigo = secrets.token_hex(8)
     nome, extensao = os.path.splitext(imagem.filename)
     nome_arquivo = nome + codigo + extensao
-    caminho_completo = os.path.join(app.root_path, 'static/fotos_perfil', nome_arquivo)
+    caminho_completo = os.path.join(app.root_path, f'static/{pasta}', nome_arquivo)
     tamanho = (400, 400)
     imagem_reduzida = Image.open(imagem)
     imagem_reduzida.thumbnail(tamanho)
     imagem_reduzida.save(caminho_completo)
     return nome_arquivo
 
-
 def atualizar_cursos(form):
-   lista_cursos = []
-   for campo in form:
-       if 'curso_' in campo.name:
-           if campo.data:
-               lista_cursos.append(campo.label.text)
-   lista_cursos = ';'.join(lista_cursos)  # transformando a lista uma única string
-   if len(lista_cursos) == 0:
-       lista_cursos = 'Não Informado'
-   return lista_cursos
-
+    lista_cursos = []
+    for campo in form:
+        if 'curso_' in campo.name:
+            if campo.data:
+                lista_cursos.append(campo.label.text)
+    lista_cursos = ';'.join(lista_cursos)
+    if len(lista_cursos) == 0:
+        lista_cursos = 'Não Informado'
+    return lista_cursos
 
 @app.route('/perfil/editar', methods=['GET', 'POST'])
 @login_required
@@ -130,7 +123,6 @@ def editar_perfil():
     foto_perfil = url_for('static', filename='fotos_perfil/{}'.format(current_user.foto_perfil))
     return render_template('editarperfil.html', foto_perfil=foto_perfil, form=form)
 
-
 @app.route('/post/<post_id>', methods=['GET', 'POST'])
 @login_required
 def exibir_post(post_id):
@@ -143,13 +135,16 @@ def exibir_post(post_id):
         elif form.validate_on_submit():
             post.titulo = form.titulo.data
             post.corpo = form.corpo.data
+            if form.foto_post.data:
+                nome_imagem = salvar_imagem(form.foto_post.data, pasta='fotos_posts')
+                post.foto_post = nome_imagem
             database.session.commit()
             flash('Post Atualizado com Sucesso', 'alert-success')
             return redirect(url_for('home'))
     else:
         form = None
-    return render_template('post.html', post=post, form=form)
-
+    foto_post = url_for('static', filename='fotos_posts/{}'.format(post.foto_post))
+    return render_template('post.html', post=post, form=form, foto_post=foto_post)
 
 @app.route('/post/<post_id>/excluir', methods=['GET', 'POST'])
 @login_required

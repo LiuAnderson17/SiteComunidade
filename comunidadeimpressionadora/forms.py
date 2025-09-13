@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField,TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from flask_ckeditor import CKEditorField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from comunidadeimpressionadora.models import Usuario
 from flask_login import current_user
-
 
 class FormCriarConta(FlaskForm):
     username = StringField('Nome de Usuário', validators=[DataRequired()])
@@ -18,13 +18,11 @@ class FormCriarConta(FlaskForm):
         if usuario:
             raise ValidationError('E-mail já cadastrado. Cadastre-se com outro e-mail ou faça login para continuar')
 
-
 class FormLogin(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     senha = PasswordField('Senha', validators=[DataRequired(), Length(6, 20)])
     lembrar_dados = BooleanField('Lembrar Dados de Acesso')
     botao_submit_login = SubmitField('Fazer Login')
-
 
 class FormEditarPerfil(FlaskForm):
     username = StringField('Nome de Usuário', validators=[DataRequired()])
@@ -44,9 +42,8 @@ class FormEditarPerfil(FlaskForm):
             if usuario:
                 raise ValidationError('Já existe um usuário com esse e-mail. Cadastre outro e-mail')
 
-
-
 class FormCriarPost(FlaskForm):
     titulo = StringField('Título do Post', validators=[DataRequired(), Length(2, 140)])
-    corpo = TextAreaField('Escreva seu Post Aqui', validators=[DataRequired()])
+    corpo = CKEditorField('Escreva seu Post Aqui', validators=[DataRequired()])
+    foto_post = FileField('Foto do Post', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
     botao_submit = SubmitField('Criar Post')
