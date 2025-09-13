@@ -33,7 +33,6 @@ O projeto foi criado para praticar desenvolvimento back-end com Flask, autentica
 
 ## 📂 Estrutura do Projeto
 
-```
 
 SiteComunidade/
 │
@@ -128,9 +127,3 @@ http://127.0.0.1:5000
 
 * GitHub: [LiuAnderson17](https://github.com/LiuAnderson17)
 * Email: *[seuemail@dominio.com](mailto:liu.anderson17@gmail.com)*
-
-```
-
----
-
-
