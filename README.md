@@ -31,22 +31,6 @@ O projeto foi criado para praticar desenvolvimento back-end com Flask, autentica
 
 ---
 
-## 📂 Estrutura do Projeto
-
-
-SiteComunidade/
-│
-├── static/                      # arquivos estáticos (CSS, imagens, JS)
-├── templates/                   # templates HTML (Jinja2)
-├── uploads/                     # uploads de imagens
-├── main.py                      # ponto de entrada da aplicação Flask
-├── requirements.txt             # dependências do projeto
-└── README.md                    # documentação do projeto
-
-````
-
----
-
 ## ▶️ Como executar o projeto localmente
 
 ### 1. Clonar o repositório
